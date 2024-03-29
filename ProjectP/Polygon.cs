@@ -13,6 +13,7 @@ namespace ProjectP
         {
             //comment
             points = new Point[8];
+            // murat
             points[0] = new Point(100, 150);
             points[1] = new Point(400, 150);
             points[2] = new Point(400, 250);
