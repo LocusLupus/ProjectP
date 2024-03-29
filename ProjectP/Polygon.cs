@@ -11,6 +11,7 @@ namespace ProjectP
         private Point[] points;
         public Polygon()
         {
+
             points = new Point[8];
             points[0] = new Point(100, 150);
             points[1] = new Point(400, 150);
@@ -31,8 +32,11 @@ namespace ProjectP
                 g.DrawPolygon(pen, points);
             double area = CalculatePolygonArea();
             string areaText = $"Area of the polygon: {area}mm^2";
+            double inertiax = CalculateMomentOfInertiaXAxis();
+            string inertiaxText=$"Inertia of the polygon about x axis: {inertiax}";
             Font font = new Font(FontFamily.GenericMonospace, 10);
             g.DrawString(areaText, font, Brushes.Black, 10, 10);
+            g.DrawString(inertiaxText, font, Brushes.RosyBrown, 10, 20);
             PointF centroid = CalculateCentroid(points);
             float size = 5.0f; 
             g.FillEllipse(Brushes.Blue, centroid.X - size / 2, centroid.Y - size / 2, size, size);
@@ -72,16 +76,22 @@ namespace ProjectP
             double area = CalculatePolygonArea();
             double cx = 0;
             double cy = 0;
+            double signedarea = 0;
+            
             for (int i = 0; i < points.Length-1;i++)
             {
                 double x1 = points[i].X;
                 double y1 = points[i].Y;
                 double x2 = points[i + 1].X;
                 double y2 = points[i + 1].Y;
-                cx += (x1 + x2) * (x1 * y2 - x2 * y1);
-                cy += (y1 + y2) * (x1 * y2 - x2 * y1);
+                double a = x1 * y2 - x2 * y1;
+                signedarea += a;
+                cx += (x1 +x2)*a;
+                cy += (y1 + y2)*a;
             }
-            cx /= (6.0 * area);
+            signedarea *= 0.5;
+
+            cx /= (6.0 *area);
             cy/=(6.0*area);
             return new PointF((float)cx,(float)cy);
 
@@ -92,7 +102,33 @@ namespace ProjectP
 
 
         }
-        
+        private double CalculateMomentOfInertiaXAxis()
+        {
+            double inertia = 0;
+
+            if (points.Length < 3)
+                return inertia;
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                int nextIndex = (i + 1) % points.Length;
+
+                double xi = points[i].X;
+                double xi1 = points[nextIndex].X;
+                double yi = points[i].Y;
+                double yi1 = points[nextIndex].Y;
+
+                double segmentInertia = (1.0 / 12.0) * (yi * yi + yi1 * yi1 + yi * yi1) * (xi1 - xi);
+
+                inertia += segmentInertia;
+            }
+
+
+            return inertia;
+        }
+    }
+
+
 
 
     }
@@ -100,4 +136,4 @@ namespace ProjectP
 
 
 
-}
+
