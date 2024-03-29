@@ -11,7 +11,7 @@ namespace ProjectP
         private Point[] points;
         public Polygon()
         {
-
+            //comment
             points = new Point[8];
             points[0] = new Point(100, 150);
             points[1] = new Point(400, 150);
